@@ -24,7 +24,10 @@ class Node(object):
         self.radius=0
         self.death=10000000
         self.payload=0
-        self._hop=-1
+        self.hop=-1
+        self.visited=0
+        self.timer=0
+
     
     
     
@@ -44,12 +47,12 @@ class Node(object):
     
 
     @property
-    def next_hop(self):
-        return self._hop 
+    def nexthop(self):
+        return self.hop 
     
-    @next_hop.setter
-    def next_hop(self,value):
-        self._hop=value
+    @nexthop.setter
+    def nexthop(self,value):
+        self.hop=value
 
 
     @property
@@ -100,7 +103,7 @@ class Node(object):
       print("node %d transmitting." % (self.id))
       if not msg_length:
         msg_length = self.tx_queue_size
-      msg_length += config.HEADER_LENGTH
+      #msg_length += config.HEADER_LENGTH
 
       if not destination:
         destination = self.parent
@@ -125,8 +128,7 @@ class Node(object):
     @_only_active_nodes
     def receive(self, msg_length):
       print("node %d receiving." % (self.id))
-      #self._aggregate(msg_length - config.HEADER_LENGTH)
-
+      #self._aggregate(msg_length - config.HEADER_LENGTH
       self.amount_received += msg_length
 
       # energy model for receiver
