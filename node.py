@@ -2,19 +2,24 @@ import numpy as np
 import config
 
 class Node(object):
-    def __init__(self,id,parent=None,sink=None):
+    def __init__(self,id,parent=None,sink=None,pos_x=None,pos_y=None):
         self.id=id
-        self.pos_x=np.random.uniform(0,config.AREA_WIDTH)
-        self.pos_y=np.random.uniform(0,config.AREA_HEIGHT)
+        if pos_x is None and pos_y is None:
+          self.pos_x=np.random.uniform(0,config.AREA_WIDTH)
+          self.pos_y=np.random.uniform(0,config.AREA_HEIGHT)
+        else:
+          self.pos_x=pos_x
+          self.pos_y=pos_y
         if sink is None:
           self.battery=config.INITIAL_BATTERY
         else: 
           self.battery=1000000
         self.parent=parent
         self.sink=sink
-        self.energy=config.sense_energy
+        self.energy=config.sense_energyali
         self.reactivate()
-    def reactivate():
+        
+    def reactivate(self):
         self.recieved_bit=0
         self.alive=1
         self.sleep=0
@@ -28,7 +33,8 @@ class Node(object):
         self.visited=0
         self.timer=0
 
-    
+    def helloWorld(self):
+      print("Hello World")
     
     
     def recharge(self):
@@ -65,7 +71,7 @@ class Node(object):
     def is_sleeping(self, value):
       self.sleep = value if not self.is_head() else 0
 
-    def is_head():
+    def is_head(self):
       if self.sink is not None:
         return 1
       return 0

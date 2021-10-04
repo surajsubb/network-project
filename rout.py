@@ -56,7 +56,7 @@ class Routing:
             if sink in edge:
                 VT.append(edge)
         mapping={}
-        while not self.network.all_visited_nodes:
+        while not self.network.all_visited_nodes():
             for e in VT:
                 mapping[e]=calculate_score(e[0],e[1],e[-1]['weight'])
             temp = min(mapping.values())
