@@ -1,3 +1,5 @@
+import math
+
 AREA_WIDTH=100
 AREA_HEIGHT=100
 
@@ -21,7 +23,7 @@ NOTIFY_POSITION = 0
 SLEEP_TIME=15
 WAKE_UP=5
 
-C_AVG=##
+# C_AVG=##
 
 TIME_SYN=3
 
@@ -33,6 +35,9 @@ NB_NODES = 20
 COVERAGE_RADIUS = 15 # meters 
 # node transmission range
 TX_RANGE = 30 # meters
+# base station position
+BS_POS_X = 0
+BS_POS_Y = 0
 
 E_ELEC = 50e-9 # Joules
 # energy dissipated at the data aggregation (/bit)
