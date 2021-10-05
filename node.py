@@ -16,7 +16,7 @@ class Node(object):
           self.battery=1000000
         self.parent=parent
         self.sink=sink
-        self.energy=config.sense_energyali
+        self.energy=config.sense_energy
         self.reactivate()
         
     def reactivate(self):

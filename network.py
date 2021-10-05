@@ -1,13 +1,37 @@
 import config as cf
 from node import Node
 import numpy as np 
+import simpy
 
 class Network():
-  def __init__(self):
+  def __init__(self, env):
+    self.env = env
     self.is_any_dead=0
     self.makeGraph()
+    self.initial_energy_in_network()
+    self.action = env.process(self.Simulate())
   
+  def Simulate(self):
+    while True:
+      print("wake up at %d" % self.env.now)
+      yield self.env.process(self.run_round(2))
+
+      print("going to sleep at %d" % self.env.now)
+      yield self.env.timeout(18)
+  
+  def run_round(self, duration):
+    yield self.env.timeout(duration)
+    
   #making graph
+  def initial_energy_in_network(self):
+    self.energy_before = []
+    self.total_energy_before = 0
+    self.average_energy_before = 0
+    for node in self.my_nodes:
+      self.energy_before.extend([node.battery])
+      self.total_energy_before+=node.battery
+    self.average_energy_before = self.total_energy_before/cf.NB_NODES
+
   def makeGraph(self):
     #creating nodes in a grid shape
     # 0 4 8  12 16
@@ -49,6 +73,33 @@ class Network():
         return False
     return True
 
+  #calculate total energy consumed by network and average energy consumed
+  def get_energy_consumed_by_network(self):
+    total_energy = 0
+    for node in self.my_nodes:
+      total_energy+=node.energy
+    energy_consumed = self.total_energy_before-total_energy
+    self.total_energy_before = total_energy
+    self.average_energy_before = energy_consumed/cf.NB_NODES
+    return energy_consumed
+
+  #return list of energies of each node
+  def get_energy_network(self):
+    energy_consumed_each_node = []
+    energy_in_each_node = []
+    i=0
+    for node in self.my_nodes:
+      energy_in_each_node.extend([node.energy])
+      energy_consumed_each_node.extend([self.energy_before[i]-node.energy])
+      i+=1
+    self.energy_before = energy_in_each_node
+    return energy_consumed_each_node
+
+  #calculate average energy consumed by the nodes
+  # def calculate_average_energy_consumed(self):
+  #   average_energy_consumed = self.total_energy_before/cf.NB_NODES
+  #   return average_energy_consumed
+      
   #edges between nodes
   def communication_link(self):
     my_edges = []
@@ -211,4 +262,8 @@ class Network():
     ])
 
     return my_edges
-      
+
+env = simpy.Environment() 
+my_network = Network(env)
+env.run(until=100)
+# print(my_network.get_energy_network())
