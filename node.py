@@ -29,7 +29,7 @@ class Node(object):
         self.radius=0
         self.death=10000000
         self.payload=0
-        self.hop=-1
+        self.hop=0
         self.visited=0
         self.timer=0
 
