@@ -44,3 +44,5 @@ E_MP = 0.0013e-12 # Joules
 # free-space channel (/bin/m^2)
 E_FS = 10e-12 # Joules
 THRESHOLD_DIST = math.sqrt(E_FS/E_MP)
+
+RESULT='./result/'
