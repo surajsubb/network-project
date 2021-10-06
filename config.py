@@ -23,7 +23,7 @@ NOTIFY_POSITION = 0
 SLEEP_TIME=15
 WAKE_UP=5
 
-C_AVG=(10.0 + 15.0 + 20.0)/3.0
+C_avg=(10.0 + 15.0 + 20.0)/3.0
 
 TIME_SYN=3
 
@@ -39,7 +39,7 @@ TX_RANGE = 30 # meters
 BS_POS_X = 0
 BS_POS_Y = 0
 
-E_ELEC = 50e-5 # Joules
+E_ELEC = 50e-3 # Joules
 # energy dissipated at the data aggregation (/bit)
 E_DA = 5e-5 # Joules
 # energy dissipated at the power amplifier (supposing a multi-path

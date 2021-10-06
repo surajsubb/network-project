@@ -14,6 +14,7 @@ class Network():
     self.env = env
     self.is_any_dead=0
     self.round_number = 0
+    self.my_nodes=[]
     self.makeGraph()
     self.initial_energy_in_network()
     self.action = self.env.process(self.Simulate())
@@ -24,7 +25,7 @@ class Network():
      print("wake up at %d" % self.env.now)
      self.round_number+=1
      print("starting round number %d" % self.round_number)
-     self.run_round()
+     self.env.process(self.run_round())
 
      print("going to sleep at %d" % self.env.now)
      yield self.env.timeout(18)
@@ -46,7 +47,7 @@ class Network():
 
 
     visualize_Tree(t,self.round_number)
-    for i in range(25):
+    for i in range(2):
       r.start_convergecast()
       print(self.get_energy_network())
       print(self.get_energy_consumed_by_network())
@@ -355,7 +356,7 @@ def main():
   # env=None
   env = simpy.Environment() 
   my_network = Network(env)
-  env.run()
+  env.run(until=100)
   # print(my_network.energy_before)
   # visualize_graph(my_network)
   # r=Routing(my_network)

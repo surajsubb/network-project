@@ -16,10 +16,17 @@ broadcast_datacollection()
 while adding edge follow the convention of
 '''
 
+def update_payload(node):
+    if node is None:
+        pass
+    else:
+        node.payload+=1
+        update_payload(node.parent)
+
 def calculate_score(node1,node2,weight):
     if node1.visited:
-        u=node1.battery/(node1.hop*config.C_AVG*math.ceil((node1.payload+2)*config.l/config.beta)+(node1.payload+1)*config.E_ELEC+node1.energy)
-        v=node2.battery/weight+node2.energy+node1.hop*config.C_AVG    
+        u=node1.battery/(node1.hop*config.C_avg*math.ceil((node1.payload+2)*config.l/config.beta)+(node1.payload+1)*config.E_ELEC+node1.energy)
+        v=node2.battery/weight+node2.energy+node1.hop*config.C_avg    
     else:
         u=node2.battery/(node2.hop*config.C_avg*math.ceil((node2.payload+2)*config.l/config.beta)+(node2.payload+1)*config.E_ELEC+node2.energy)
         v=node1.battery/weight+node1.energy+node2.hop*config.C_avg
@@ -83,6 +90,9 @@ class Routing:
                     mapping[i]=calculate_score(e[0],e[1],e[-1]['weight'])
                 #print(i)
                 i+=1
+            
+            #for key in mapping:
+            #    print(key,VT[key][0].id,VT[key][1].id,mapping[key])
             temp = max(mapping.values())
             #print(temp)
             res=None
@@ -91,18 +101,21 @@ class Routing:
             for key in mapping.keys():
                 if mapping[key]==temp:
                     #print(key,len(VT))
+                    print(mapping[key],VT[key][0].id,VT[key][1].id)
                     res=VT[key]
                     break
-            print(res[0].id,res[1].id)
+            #print(res[0].id,res[1].id,)
+            if res[0].visited:
+                res[0],res[1]=res[1],res[0]
             #print(res)
             result.append(res)
             res[0].visited=1
             res[1].visited=1
             res[0].parent=res[1]
-            res[1].payload+=1
+            update_payload(res[1])
             res[0].hop=res[1].hop+1
 
-            ST.append((res,res[0].id,res[0].hop))
+            ST.append((res[0],res[0].id,res[0].hop))
             inc.append(res[0])
             VT.remove(res)
             for edge in edges:
@@ -116,17 +129,25 @@ class Routing:
         self.tree_nodes=[]
         #print("hie")
         #print(result)
+        #print(ST)
         ST.sort(key=func,reverse=True)
+        print(ST)
+        for edge in result:
+            print(edge[0].id,edge[1].id)
         for node in ST:
             #Tree.add_node(node[0])
-            self.tree_nodes.append(node[0])
+            self.tree_nodes.append(node)
         Tree.add_edges_from(result)
         ##Tree.nodes[sink.id]['color']="Red"
-        print("hu")
-        print(ST)
+        for node in self.tree_nodes:
+            #print(node)
+            print(node[0].id,node[0].payload)
+            #print("hu")
+        #print(ST)
         print("fieasd")
         print("Hi")
         return Tree
+    
     
     def time_synchronize(self):
         sink=self.network.get_sink()

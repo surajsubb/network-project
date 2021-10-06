@@ -25,7 +25,7 @@ def Jain_fairness(network):
 
 def visualize_Tree(tree, round_number):
     nx.draw(tree)
-    plt.show()
+    #plt.show()
     plt.savefig("plots/plot%d.png" % round_number)
     plt.close()
 
