@@ -2,47 +2,58 @@ import config as cf
 from node import Node
 import numpy as np 
 import simpy
-from rout import Routing
 from utils import *
-#flow
-#wake up nodes
-#make graph
-#per round
-#make tree
-#time synchro
-#start convergecast
-#each round child to parent transmission will happen x times
-#sleep
+from rout import Routing
+import matplotlib.pyplot as plt
+
+#function to get number of decendants list of self.payload in node
+
 class Network():
   def __init__(self, env):
+    self.end = 0
     self.env = env
     self.is_any_dead=0
-    self.number_of_rounds_executed = 0
-    self.my_nodes = []
-    #no_of rounds executed
-    #no of transmission in each round
+    self.round_number = 0
     self.makeGraph()
     self.initial_energy_in_network()
-    self.routing = Routing(self)
-    # self.action = env.process(self.Simulate())
+    self.action = self.env.process(self.Simulate())
   
   def Simulate(self):
-    while True:
-      print("wake up at %d" % self.env.now)
-      yield self.env.process(self.run_round())
-      # 
-      print("going to sleep at %d" % self.env.now)
-      yield self.env.timeout(18)
+    
+   while self.end == 0:
+     print("wake up at %d" % self.env.now)
+     self.round_number+=1
+     print("starting round number %d" % self.round_number)
+     self.run_round()
+
+     print("going to sleep at %d" % self.env.now)
+     yield self.env.timeout(18)
   
   def run_round(self):
-    self.routing.make_Lifetime_Tree()
-    self.routing.time_synchronize()
-    for i in range(5):
-      yield self.env.process(self.routing.start_convergecast())
-    self.number_of_rounds_executed+=1
-    self.get_energy_consumed_by_network()
-    self.get_energy_network()
+    # yield self.env.timeout(duration)
+    # print(self.energy_before)
+    # visualize_graph(self)
+    for node in self.my_nodes:
+      node.reactivate()
+    r=Routing(self)
+    r.wakeup()
+    t=r.make_Lifetime_Tree()
+    if t == 0:
+      # simpy.Interrupt()
+      self.end = 1
+      return
+    r.time_synchronize()
 
+
+    visualize_Tree(t,self.round_number)
+    for i in range(25):
+      r.start_convergecast()
+      print(self.get_energy_network())
+      print(self.get_energy_consumed_by_network())
+      print(self.energy_before)
+    r.sleep()
+    yield self.env.timeout(2)
+    print("----------------------------------------------------------------------------------------------------------------------------")
     
   #making graph
   def initial_energy_in_network(self):
@@ -53,7 +64,7 @@ class Network():
     self.average_energy_before = 0
 
     for node in self.my_nodes:
-      self.energy_before.extend([node.battery])
+      self.energy_before.append(node.battery)
       self.total_energy_before+=node.battery
     self.average_energy_before = self.total_energy_before/cf.NB_NODES
 
@@ -66,7 +77,7 @@ class Network():
  
     # self.my_nodes = []
     i=0
-    self.my_nodes.extend([Node(i,None,True,0,0)])
+    self.my_nodes.append(Node(i,None,True,0,0))
     for x in range(5):
       for y in range(4):
           if(i == 0):
@@ -74,7 +85,7 @@ class Network():
             continue
           px = x*10
           py = y*10
-          self.my_nodes.extend([Node(i,None,None,px,py)])
+          self.my_nodes.append(Node(i,None,None,px,py))
           i+=1
   
   #getting the sink node
@@ -102,7 +113,7 @@ class Network():
   def get_energy_consumed_by_network(self):
     total_energy = 0
     for node in self.my_nodes:
-      total_energy+=node.battrey
+      total_energy+=node.battery
     energy_consumed = self.total_energy_before-total_energy
     self.total_energy_before = total_energy
     self.average_energy_before = energy_consumed/cf.NB_NODES
@@ -115,8 +126,8 @@ class Network():
     energy_in_each_node = []
     i=0
     for node in self.my_nodes:
-      energy_in_each_node.extend([node.battery])
-      energy_consumed_each_node.extend([self.energy_before[i]-node.battery])
+      energy_in_each_node.append(node.battery)
+      energy_consumed_each_node.append(self.energy_before[i]-node.battery)
       i+=1
     self.energy_before = energy_in_each_node
     return energy_consumed_each_node
@@ -283,21 +294,79 @@ class Network():
       ],
     ])
 
+    # my_edges = []
+    # my_edges.extend([
+    #   [
+    #     self.my_nodes[0],
+    #     self.my_nodes[1],
+    #     {'weight': np.random.uniform(1,5)}
+    #   ],
+    #   [
+    #     self.my_nodes[0],
+    #     self.my_nodes[2],
+    #     {'weight': np.random.uniform(1,5)}
+    #   ],
+    #   [
+    #     self.my_nodes[0],
+    #     self.my_nodes[3],
+    #     {'weight': np.random.uniform(1,5)}
+    #   ],
+    #   [
+    #     self.my_nodes[0],
+    #     self.my_nodes[4],
+    #     {'weight': np.random.uniform(1,5)}
+    #   ],
+    #   [
+    #     self.my_nodes[1],
+    #     self.my_nodes[2],
+    #     {'weight': np.random.uniform(1,5)}
+    #   ],
+    #   [
+    #     self.my_nodes[1],
+    #     self.my_nodes[3],
+    #     {'weight': np.random.uniform(1,5)}
+    #   ],
+    #   [
+    #     self.my_nodes[1],
+    #     self.my_nodes[4],
+    #     {'weight': np.random.uniform(1,5)}
+    #   ],
+    #   [
+    #     self.my_nodes[2],
+    #     self.my_nodes[3],
+    #     {'weight': np.random.uniform(1,5)}
+    #   ],
+    #   [
+    #     self.my_nodes[2],
+    #     self.my_nodes[4],
+    #     {'weight': np.random.uniform(1,5)}
+    #   ],
+    #   [
+    #     self.my_nodes[3],
+    #     self.my_nodes[4],
+    #     {'weight': np.random.uniform(1,5)}
+    #   ],
+    # ])
+
     return my_edges
 
 #env = simpy.Environment() 
 def main():
-  #env=None
-  #env = simpy.Environment() 
+  # env=None
+  env = simpy.Environment() 
   my_network = Network(env)
-  #env.run(until=100)
-  print(my_network.get_energy_network())
-  #visualize_graph(my_network)
-  r=Routing(my_network)
-  t=r.make_Lifetime_Tree()
+  env.run()
+  # print(my_network.energy_before)
+  # visualize_graph(my_network)
+  # r=Routing(my_network)
+  # t=r.make_Lifetime_Tree()
   #print("hello")
   #print(t)
-  visualize_Tree(t)
+  # visualize_Tree(t)
+  # for i in range(10):
+  #   r.start_convergecast()
+  #   print(my_network.get_energy_network())
+  #   print(my_network.energy_before)
 
 
 main()

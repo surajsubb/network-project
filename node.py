@@ -1,5 +1,6 @@
 import numpy as np 
 import config
+from utils import *
 
 class Node(object):
     def __init__(self,id,parent=None,sink=None,pos_x=None,pos_y=None):
@@ -17,11 +18,11 @@ class Node(object):
         self.parent=parent
         self.sink=sink
         self.energy=config.sense_energy
+        self.alive=1
         self.reactivate()
         
     def reactivate(self):
         self.recieved_bit=0
-        self.alive=1
         self.sleep=0
         self.transmit_bit=0
         self.sensed=0
@@ -32,6 +33,9 @@ class Node(object):
         self.hop=0
         self.visited=0
         self.timer=0
+        self.amount_sensed=0
+        self.amount_received=0
+        self.amount_transmitted=0
 
     def helloWorld(self):
       print("Hello World")
@@ -116,12 +120,12 @@ class Node(object):
       distance = calculate_distance(self, destination)
 
       # transmitter energy model
-      energy = config.E_ELEC
+      energy = config.E_ELEC*msg_length
       if distance > config.THRESHOLD_DIST:
         energy += config.E_MP * (distance**4)
       else:
         energy += config.E_FS * (distance**2)
-      energy *= msg_length
+      # energy *= msg_length
 
       # automatically call other endpoint receive
       destination.receive(msg_length)
