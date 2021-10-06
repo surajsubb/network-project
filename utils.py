@@ -23,9 +23,11 @@ def Jain_fairness(network):
     return J
 
 
-def visualize_Tree(tree):
+def visualize_Tree(tree, round_number):
     nx.draw(tree)
     plt.show()
+    plt.savefig("plots/plot%d.png" % round_number)
+    plt.close()
 
 def visualize_graph(network):
     g=nx.Graph()
@@ -36,6 +38,7 @@ def visualize_graph(network):
     g.add_edges_from(edges)
     nx.draw(g)
     plt.show()
+    plt.savefig("graph.png")
 
 
 

@@ -4,7 +4,7 @@ AREA_WIDTH=100
 AREA_HEIGHT=100
 
 
-INITIAL_BATTERY=2
+INITIAL_BATTERY=10
 
 sense_energy=3.2e-9
 
@@ -39,9 +39,9 @@ TX_RANGE = 30 # meters
 BS_POS_X = 0
 BS_POS_Y = 0
 
-E_ELEC = 50e-9 # Joules
+E_ELEC = 50e-5 # Joules
 # energy dissipated at the data aggregation (/bit)
-E_DA = 5e-9 # Joules
+E_DA = 5e-5 # Joules
 # energy dissipated at the power amplifier (supposing a multi-path
 # fading channel) (/bin/m^4)
 E_MP = 0.0013e-12 # Joules

@@ -46,9 +46,12 @@ class Routing:
     
     def make_Lifetime_Tree(self):
         Tree=nx.Graph()
-        sink=self.network.get_sink()[0]
-        print(sink)
+        sink=self.network.get_sink()
+        # print(sink)
         nodes=self.network.get_alive_nodes()
+        if len(nodes) < config.NB_NODES:
+            print("node dead cannot continue")
+            return 0
         #print(nodes)
         edges=self.network.communication_link()
         #print("Edges",edges)
@@ -58,7 +61,7 @@ class Routing:
         inc=[]
         Inc=[]
         sink.visited=1
-        ST.append((sink.id,sink.hop))
+        ST.append((sink,sink.id,sink.hop))
         inc.append(sink)
         for edge in edges:
             if sink in edge:
@@ -95,7 +98,8 @@ class Routing:
             res[0].parent=res[1]
             res[1].payload+=1
             res[0].hop=res[1].hop+1
-            ST.append((res[0].id,res[0].hop))
+
+            ST.append((res,res[0].id,res[0].hop))
             inc.append(res[0])
             VT.remove(res)
             for edge in edges:
@@ -123,18 +127,40 @@ class Routing:
     
     def time_synchronize(self):
         sink=self.network.get_sink()
+        i = 0
         for nodes in self.tree_nodes:
-            nodes.timer=sink.timer
+            if i == len(self.tree_nodes)-1:
+                break
+            i+=1
+            nodes[0].timer=sink.timer
+            # print(nodes)
     def wakeup(self):
         pass
     def sleep(self):
+        i = 0
         for nodes in self.tree_nodes:
-            nodes.sleep=1
+            if i == len(self.tree_nodes)-1:
+                break
+            i+=1
+            nodes[0].sleep=1
     
     def start_convergecast(self):
+        i = 0
         for nodes in self.tree_nodes:
-            nodes.sense()
-            nodes.transmit(nodes.parent)
+            if i == len(self.tree_nodes)-1:
+                break
+            i+=1
+            # print("Starting convergecast")
+            nodes[0].sense()
+            nodes[0].transmit(None, nodes[0].parent)
+
+    def reactivate_nodes(self):
+        i = 0
+        for nodes in self.tree_nodes:
+            if i == len(self.tree_nodes)-1:
+                break
+            i+=1
+            nodes[0].reactivate()
             
             
         
