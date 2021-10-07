@@ -14,6 +14,7 @@ class Network():
     self.env = env
     self.is_any_dead=0
     self.round_number = 0
+    self.my_nodes=[]
     self.makeGraph()
     self.initial_energy_in_network()
     self.action = self.env.process(self.Simulate())
@@ -42,7 +43,8 @@ class Network():
       node.reactivate()
     r=Routing(self)
     r.wakeup()
-    t=r.make_Lifetime_Tree()
+    #t=r.make_Lifetime_Tree()
+    t=r.random_spanning()
     if t == 0:
       # simpy.Interrupt()
       self.end = 1
