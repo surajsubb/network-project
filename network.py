@@ -69,8 +69,11 @@ class Network():
   #making graph
   def initial_energy_in_network(self):
     self.energy_before = []
+    self.energy_consumed_per_round = []
+
     self.total_energy_before = 0
     self.average_energy_before = 0
+
     for node in self.my_nodes:
       self.energy_before.append(node.battery)
       self.total_energy_before+=node.battery
@@ -83,7 +86,7 @@ class Network():
     # 2 6 10 14 18
     # 3 7 11 15 19
  
-    self.my_nodes = []
+    # self.my_nodes = []
     i=0
     self.my_nodes.append(Node(i,None,True,0,0))
     for x in range(5):
@@ -125,6 +128,7 @@ class Network():
     energy_consumed = self.total_energy_before-total_energy
     self.total_energy_before = total_energy
     self.average_energy_before = energy_consumed/cf.NB_NODES
+    self.energy_consumed_per_round.extend([energy_consumed])
     return energy_consumed
 
   #return list of energies of each node
@@ -139,10 +143,6 @@ class Network():
     self.energy_before = energy_in_each_node
     return energy_consumed_each_node
 
-  #calculate average energy consumed by the nodes
-  # def calculate_average_energy_consumed(self):
-  #   average_energy_consumed = self.total_energy_before/cf.NB_NODES
-  #   return average_energy_consumed
       
   #edges between nodes
   def communication_link(self):
