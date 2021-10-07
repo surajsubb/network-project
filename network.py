@@ -38,7 +38,8 @@ class Network():
       node.reactivate()
     r=Routing(self)
     r.wakeup()
-    t=r.make_Lifetime_Tree()
+    #t=r.make_Lifetime_Tree()
+    t=r.random_spanning()
     if t == 0:
       # simpy.Interrupt()
       self.end = 1

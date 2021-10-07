@@ -2,6 +2,7 @@
 import config 
 import networkx as nx
 import math
+import random
 
 
 '''
@@ -125,11 +126,7 @@ class Routing:
                     VT.append(edge)
                     Inc.append((edge[0].id,edge[1].id))
                     
-        #return ST
         self.tree_nodes=[]
-        #print("hie")
-        #print(result)
-        #print(ST)
         ST.sort(key=func,reverse=True)
         print(ST)
         for edge in result:
@@ -142,10 +139,6 @@ class Routing:
         for node in self.tree_nodes:
             #print(node)
             print(node[0].id,node[0].payload)
-            #print("hu")
-        #print(ST)
-        print("fieasd")
-        print("Hi")
         return Tree
     
     
@@ -186,6 +179,72 @@ class Routing:
             i+=1
             nodes[0].reactivate()
             
+
+    def random_spanning(self):
+        Tree=nx.Graph()
+        sink=self.network.get_sink()
+        # print(sink)
+        nodes=self.network.get_alive_nodes()
+        if len(nodes) < config.NB_NODES:
+            print("node dead cannot continue")
+            return 0
+        #print(nodes)
+        edges=self.network.communication_link()
+        ST=[]
+        VT=[]
+        result=[]
+        inc=[]
+        Inc=[]
+        sink.visited=1
+        ST.append((sink,sink.id,sink.hop))
+        inc.append(sink)
+        for edge in edges:
+            if sink in edge:
+                VT.append(edge)
+                Inc.append((edge[0].id,edge[1]))
+
+        while not self.network.all_visited_nodes():
+            random_no=random.randint(0,len(VT)-1)
+            print(random_no,len(VT))
+            res=VT[random_no]
+            if res[0].visited and res[1].visited:
+                continue
+            if res[0].visited:
+                res[0],res[1]=res[1],res[0]
+            result.append(res)
+            res[0].visited=1
+            res[1].visited=1
+            res[0].parent=res[1]
+            update_payload(res[1])
+            res[0].hop=res[1].hop+1
+            ST.append((res[0],res[0].id,res[0].hop))
+            inc.append(res[0])
+            VT.remove(res)
+            for edge in edges:
+                if edge not in VT and res[0] in edge and edge not in result :
+                    if edge[0] in inc and edge[1] in inc:
+                        continue
+                    VT.append(edge)
+                    Inc.append((edge[0].id,edge[1].id))
+            
+        #return ST
+        self.tree_nodes=[]
+        #print("hie")
+        #print(result)
+        #print(ST)
+        ST.sort(key=func,reverse=True)
+        print(ST)
+        for edge in result:
+            print(edge[0].id,edge[1].id)
+        for node in ST:
+            self.tree_nodes.append(node)
+        Tree.add_edges_from(result)
+        for node in self.tree_nodes:
+            print(node[0].id,node[0].payload)
+        return Tree
+
+        
+        
             
         
 
