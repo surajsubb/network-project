@@ -86,7 +86,7 @@ class Network():
     # 2 6 10 14 18
     # 3 7 11 15 19
  
-    # self.my_nodes = []
+    self.my_nodes = []
     i=0
     self.my_nodes.append(Node(i,None,True,0,0))
     for x in range(5):
