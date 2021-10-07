@@ -18,22 +18,27 @@ class Network():
     self.makeGraph()
     self.initial_energy_in_network()
     self.action = self.env.process(self.Simulate())
+    # self.Simulate()
   
   def Simulate(self):
     
-   while self.end == 0:
-     print("wake up at %d" % self.env.now)
-     self.round_number+=1
-     print("starting round number %d" % self.round_number)
-     self.env.process(self.run_round())
+    while self.end == 0:
+      print("wake up at %d" % self.env.now)
+      self.round_number+=1
+      print("starting round number %d" % self.round_number)
 
-     print("going to sleep at %d" % self.env.now)
-     yield self.env.timeout(18)
+      self.env.process(self.run_round())
+
+      print("going to sleep at %d" % self.env.now)
+      yield self.env.timeout(18)
+    print("Dead node found in round: %d" % self.round_number)
+    print("SIMULATION OVER")
   
   def run_round(self):
     # yield self.env.timeout(duration)
     # print(self.energy_before)
     # visualize_graph(self)
+    print("hello world")
     for node in self.my_nodes:
       node.reactivate()
     r=Routing(self)
@@ -45,14 +50,20 @@ class Network():
       self.end = 1
       return
     r.time_synchronize()
-
+    # print("hello world")
 
     visualize_Tree(t,self.round_number)
-    for i in range(2):
+    for i in range(25):
       r.start_convergecast()
-      print(self.get_energy_network())
-      print(self.get_energy_consumed_by_network())
-      print(self.energy_before)
+      alive_nodes = self.get_alive_nodes()
+      if(len(alive_nodes) < cf.NB_NODES):
+        self.end = 1
+        break
+      # print(self.get_energy_network())
+      # print(self.get_energy_consumed_by_network())
+      # print(self.energy_before)
+      print(r.number_of_descendents())
+
     r.sleep()
     yield self.env.timeout(2)
     print("----------------------------------------------------------------------------------------------------------------------------")
@@ -77,7 +88,7 @@ class Network():
     # 2 6 10 14 18
     # 3 7 11 15 19
  
-    # self.my_nodes = []
+    self.my_nodes = []
     i=0
     self.my_nodes.append(Node(i,None,True,0,0))
     for x in range(5):

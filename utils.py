@@ -47,5 +47,7 @@ def visualize_graph(network):
     plt.show()
     plt.savefig("graph.png")
 
+    
+
 
 

@@ -8,12 +8,10 @@ import heapq
 '''
 Attributes:
 network 
-
 make_Lifetime_Tree()
 time synchronize()
 initial_setup()
 broadcast_datacollection()
-
 while adding edge follow the convention of
 '''
 
@@ -178,6 +176,21 @@ class Routing:
                 break
             i+=1
             nodes[0].reactivate()
+    
+    def number_of_descendents(self):
+        i = 0
+        total_desc = 0
+        avg_desc = 0
+        desc_per_node = []
+        for nodes in self.tree_nodes:
+            if i == len(self.tree_nodes)-1:
+                break
+            i+=1
+            desc_per_node.append(nodes[0].payload)
+            total_desc+=nodes[0].payload
+        print("average descendents is %d" % (total_desc/config.NB_NODES))
+        return desc_per_node
+
             
 
     def random_spanning(self):
