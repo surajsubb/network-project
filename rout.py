@@ -1,4 +1,4 @@
-#from network import *
+# from network import *
 import config 
 import networkx as nx
 import math
@@ -7,19 +7,17 @@ import math
 '''
 Attributes:
 network 
-
 make_Lifetime_Tree()
 time synchronize()
 initial_setup()
 broadcast_datacollection()
-
 while adding edge follow the convention of
 '''
 
 def calculate_score(node1,node2,weight):
     if node1.visited:
-        u=node1.battery/(node1.hop*config.C_avg*math.ceil((node1.payload+2)*config.l/config.beta)+(node1.payload+1)*config.E_ELEC+node1.energy)
-        v=node2.battery/weight+node2.energy+node1.hop*config.C_avg
+        u=node1.battery/(node1.hop*config.C_AVG*math.ceil((node1.payload+2)*config.l/config.beta)+(node1.payload+1)*config.E_ELEC+node1.energy)
+        v=node2.battery/weight+node2.energy+node1.hop*config.C_AVG    
     else:
         u=node2.battery/(node2.hop*config.C_avg*math.ceil((node2.payload+2)*config.l/config.beta)+(node2.payload+1)*config.E_ELEC+node2.energy)
         v=node1.battery/weight+node1.energy+node2.hop*config.C_avg
@@ -44,6 +42,9 @@ class Routing:
             print("Initial Setting up Routing")
             #self.make_Lifetime_Tree()
     
+    def show_network(self):
+        print(self.network)
+
     def make_Lifetime_Tree(self):
         Tree=nx.Graph()
         sink=self.network.get_sink()
@@ -161,6 +162,21 @@ class Routing:
                 break
             i+=1
             nodes[0].reactivate()
+    
+    def number_of_descendents(self):
+        i = 0
+        total_desc = 0
+        avg_desc = 0
+        desc_per_node = []
+        for nodes in self.tree_nodes:
+            if i == len(self.tree_nodes)-1:
+                break
+            i+=1
+            desc_per_node.append(nodes[0].payload)
+            total_desc+=nodes[0].payload
+        print("average descendents is %d" % (total_desc/config.NB_NODES))
+        return desc_per_node
+
             
             
         
