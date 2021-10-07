@@ -39,7 +39,7 @@ TX_RANGE = 30 # meters
 BS_POS_X = 0
 BS_POS_Y = 0
 
-E_ELEC = 50e-3 # Joules
+E_ELEC = 50e-5 # Joules
 # energy dissipated at the data aggregation (/bit)
 E_DA = 5e-5 # Joules
 # energy dissipated at the power amplifier (supposing a multi-path

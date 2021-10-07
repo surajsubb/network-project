@@ -39,20 +39,27 @@ class Network():
     # print(self.energy_before)
     # visualize_graph(self)
     print("hello world")
+    sink=self.get_sink()
     for node in self.my_nodes:
       node.reactivate()
     r=Routing(self)
     r.wakeup()
-    #t=r.make_Lifetime_Tree()
-    t=r.random_spanning()
-    if t == 0:
-      # simpy.Interrupt()
+
+    '''the below 3 functions are used to get different types of trees, run them one at a time and change visualize tree accordingly.'''
+
+    # t,p=r.make_Lifetime_Tree()
+    # t,p=r.random_spanning()
+    t,p=r.dijkstra()
+
+    if p == 0:
       self.end = 1
       return
     r.time_synchronize()
-    # print("hello world")
 
-    visualize_Tree(t,self.round_number)
+    '''change the below function according to which Tree function is being run, for maximum lifetime, make last parameter 'm'. 
+        for random spanning make last parameter 'r' and for dikistra make last parameter 'd'. 
+    '''
+    visualize_Tree(t,self.round_number,p,sink,'d')
     for i in range(25):
       r.start_convergecast()
       alive_nodes = self.get_alive_nodes()
@@ -368,16 +375,16 @@ def main():
   # env=None
   env = simpy.Environment() 
   my_network = Network(env)
-  #env.run(until=100)
+  env.run()
   # print(my_network.energy_before)
   # visualize_graph(my_network)
-  r=Routing(my_network)
-  t,p=r.dijkstra()
+  # r=Routing(my_network)
+  # t,p=r.dijkstra()
   #print("hello")
   #print(t)
   #
-  s=my_network.get_sink()
-  visualize_Tree(t,0,p,s)
+  # s=my_network.get_sink()
+  # visualize_Tree(t,0,p,s,'d')
   # for i in range(10):
   #   r.start_convergecast()
   #   print(my_network.get_energy_network())

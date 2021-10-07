@@ -5,6 +5,7 @@ import math
 import random
 import heapq
 
+
 '''
 Attributes:
 network 
@@ -60,7 +61,7 @@ class Routing:
         nodes=self.network.get_alive_nodes()
         if len(nodes) < config.NB_NODES:
             print("node dead cannot continue")
-            return 0
+            return Tree,0
         #print(nodes)
         edges=self.network.communication_link()
         #print("Edges",edges)
@@ -137,7 +138,13 @@ class Routing:
         for node in self.tree_nodes:
             #print(node)
             print(node[0].id,node[0].payload)
-        return Tree
+        
+        pos = {}
+        for node in Tree.nodes():
+            print(node)
+            pos[node]=(node.pos_x,node.pos_y)
+            print(pos[node])
+        return Tree,pos
     
     
     def time_synchronize(self):
@@ -200,7 +207,7 @@ class Routing:
         nodes=self.network.get_alive_nodes()
         if len(nodes) < config.NB_NODES:
             print("node dead cannot continue")
-            return 0
+            return Tree,0
         #print(nodes)
         edges=self.network.communication_link()
         ST=[]
@@ -254,7 +261,13 @@ class Routing:
         Tree.add_edges_from(result)
         for node in self.tree_nodes:
             print(node[0].id,node[0].payload)
-        return Tree
+
+        pos = {}
+        for node in Tree.nodes():
+            print(node)
+            pos[node]=(node.pos_x,node.pos_y)
+            print(pos[node])
+        return Tree,pos
 
     
     def dijkstra(self):
@@ -264,7 +277,7 @@ class Routing:
         nodes=self.network.get_alive_nodes()
         if len(nodes) < config.NB_NODES:
             print("node dead cannot continue")
-            return 0
+            return Tree,0
         #print(nodes)
         edges=self.network.communication_link()
         G=nx.Graph()

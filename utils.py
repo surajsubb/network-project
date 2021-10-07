@@ -1,5 +1,6 @@
 import numpy as np 
 import os
+import glob
 import math
 import networkx as nx
 from matplotlib import pyplot as plt
@@ -23,7 +24,20 @@ def Jain_fairness(network):
     return J
 
 
-def visualize_Tree(tree, round_number,pos,sink):
+def visualize_Tree(tree, round_number,pos,sink,type):
+    #delete preexisting files in respective folders
+    if(type == 'r' and round_number == 1):
+        files = glob.glob('random_plots/*')
+        for f in files:
+            os.remove(f)
+    elif(type == 'd' and round_number == 1):
+        files = glob.glob('dijikstra_plots/*')
+        for f in files:
+            os.remove(f)
+    elif(type == 'm' and round_number == 1):
+        files = glob.glob('maximum_plots/*')
+        for f in files:
+            os.remove(f)
     node_list=[]
     for node in tree.nodes():
         if node is sink:
@@ -33,7 +47,12 @@ def visualize_Tree(tree, round_number,pos,sink):
     nx.draw_networkx_nodes(tree,pos,nodelist=node_list,node_color="Blue")
     nx.draw_networkx_edges(tree,pos=pos)
     plt.show()
-    plt.savefig("plots/plot%d.png" % round_number)
+    if(type == 'r'):
+        plt.savefig("random_plots/plot%d.png" % round_number)
+    elif(type == 'd'):
+        plt.savefig("dijikstra_plots/plot%d.png" % round_number)
+    else:
+        plt.savefig("maximum_plots/plot%d.png" % round_number)
     plt.close()
 
 def visualize_graph(network):
