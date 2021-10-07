@@ -3,7 +3,7 @@ import config
 import networkx as nx
 import math
 import random
-
+import heapq
 
 '''
 Attributes:
@@ -56,7 +56,7 @@ class Routing:
         print(self.network)
 
     def make_Lifetime_Tree(self):
-        Tree=nx.Graph()
+        Tree=nx.DiGraph()
         sink=self.network.get_sink()
         # print(sink)
         nodes=self.network.get_alive_nodes()
@@ -181,7 +181,7 @@ class Routing:
             
 
     def random_spanning(self):
-        Tree=nx.Graph()
+        Tree=nx.DiGraph()
         sink=self.network.get_sink()
         # print(sink)
         nodes=self.network.get_alive_nodes()
@@ -243,7 +243,82 @@ class Routing:
             print(node[0].id,node[0].payload)
         return Tree
 
+    
+    def dijkstra(self):
+        Tree=nx.DiGraph()
+        sink=self.network.get_sink()
+        # print(sink)
+        nodes=self.network.get_alive_nodes()
+        if len(nodes) < config.NB_NODES:
+            print("node dead cannot continue")
+            return 0
+        #print(nodes)
+        edges=self.network.communication_link()
+        G=nx.Graph()
+        G.add_edges_from(edges)
+        print(G)
+        no_nodes=len(nodes)
+        dist=[1000000 for i in range(no_nodes)]
+        dist[sink.id]=0
+        print(G.adj[sink])
+        for v in G.adj[sink]:
+            print(v,G.adj[sink][v])
+        PQ = []
+        heapq.heappush(PQ, [dist[sink.id], sink])
+        result=[]
+        ST=[]
+        ST.append((sink,sink.id,sink.hop))
+        while PQ:
+            u = heapq.heappop(PQ)  # u is a tuple [u_dist, u_id]
+            u_dist = u[0]
+            u_id = u[1]
+            #if u_id == target:
+            #    break
+            for v in G.adj[u_id]:
+               v_id = v
+               w_uv = G.adj[u_id][v]['weight']
+               if dist[u_id.id] +  w_uv < dist[v_id.id]:
+                    dist[v_id.id] = dist[u_id.id] + w_uv
+                    heapq.heappush(PQ, [dist[v_id.id], v_id])
+                    #pred[v_id] = u_id
+                    #result.append([v_id,u_id,{'weight':w_uv}])
+                    v_id.parent=u_id
+                    #update_payload(u_id)
+                    #v_id.hop=u_id.hop+1
+                    
+        self.tree_nodes=[]
+        #print("hie")
+        #print(result)
+        for node in nodes:
+            if node.parent is None:
+                continue
+            Tree.add_edge(node,node.parent)
+            node.hop=node.parent.hop+1
+            update_payload(node.parent)
+        for node in nodes:
+            if node.parent is None:
+                continue
+            ST.append((node,node.id,node.hop))
+        #print(ST)
+        ST.sort(key=func,reverse=True)
+        #print(ST)
+        #for edge in result:
+            #print(edge[0].id,edge[1].id)
+        for node in ST:
+            self.tree_nodes.append(node)
+        #Tree.add_edges_from(result)
+        #for node in self.tree_nodes:
+        #    print(node[0].id,node[0].payload)
+        pos={}
+        for node in Tree.nodes():
+            print(node)
+            pos[node]=(node.pos_x,node.pos_y)
+            print(pos[node])
+
+        return Tree,pos
         
+                   
+
         
             
         

@@ -357,14 +357,16 @@ def main():
   # env=None
   env = simpy.Environment() 
   my_network = Network(env)
-  env.run(until=100)
+  #env.run(until=100)
   # print(my_network.energy_before)
   # visualize_graph(my_network)
-  # r=Routing(my_network)
-  # t=r.make_Lifetime_Tree()
+  r=Routing(my_network)
+  t,p=r.dijkstra()
   #print("hello")
   #print(t)
-  # visualize_Tree(t)
+  #
+  s=my_network.get_sink()
+  visualize_Tree(t,0,p,s)
   # for i in range(10):
   #   r.start_convergecast()
   #   print(my_network.get_energy_network())

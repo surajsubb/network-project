@@ -23,9 +23,16 @@ def Jain_fairness(network):
     return J
 
 
-def visualize_Tree(tree, round_number):
-    nx.draw(tree)
-    #plt.show()
+def visualize_Tree(tree, round_number,pos,sink):
+    node_list=[]
+    for node in tree.nodes():
+        if node is sink:
+            continue
+        node_list.append(node)
+    nx.draw_networkx_nodes(tree,pos,nodelist=[sink],node_color="Red")
+    nx.draw_networkx_nodes(tree,pos,nodelist=node_list,node_color="Blue")
+    nx.draw_networkx_edges(tree,pos=pos)
+    plt.show()
     plt.savefig("plots/plot%d.png" % round_number)
     plt.close()
 
