@@ -5,6 +5,8 @@ import math
 import networkx as nx
 from matplotlib import pyplot as plt
 from node import Node
+import config as cf
+
 
 def calculate_distance(node1,node2):
     dist=(node1.pos_x-node2.pos_x)**2+(node1.pos_y-node1.pos_y)**2
@@ -18,9 +20,14 @@ def print_node_position(network):
 
 
 def Jain_fairness(network):
-    resource=[node.battery for node in network.my_nodes]
+    resource = []
+    for node in network.my_nodes:
+        if(node.id == cf.SINK_ID):
+            continue
+        resource.append(node.battery)
     #n=config.NB_NODES
-    J=np.sum(resource)**2/n*(np.sum(resource*resource))
+    J=(np.sum(resource)**2)/((len(resource)*(np.sum(np.multiply(resource,resource)))))
+    print(resource)
     return J
 
 

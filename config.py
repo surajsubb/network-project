@@ -27,7 +27,8 @@ C_avg=(10.0 + 15.0 + 20.0)/3.0
 
 TIME_SYN=3
 
-
+#Sink node id
+SINK_ID = 0
 ## Network configurations:
 # number of nodes
 NB_NODES = 20

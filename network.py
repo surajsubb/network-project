@@ -5,6 +5,8 @@ import simpy
 from utils import *
 from rout import Routing
 import matplotlib.pyplot as plt
+import json
+from collections import defaultdict
 
 #function to get number of decendants list of self.payload in node
 
@@ -19,7 +21,8 @@ class Network():
     self.initial_energy_in_network()
     self.action = self.env.process(self.Simulate())
     # self.Simulate()
-  
+
+
   def Simulate(self):
     
     while self.end == 0:
@@ -35,10 +38,7 @@ class Network():
     print("SIMULATION OVER")
   
   def run_round(self):
-    # yield self.env.timeout(duration)
-    # print(self.energy_before)
-    # visualize_graph(self)
-    print("hello world")
+
     sink=self.get_sink()
     for node in self.my_nodes:
       node.reactivate()
@@ -47,9 +47,38 @@ class Network():
 
     '''the below 3 functions are used to get different types of trees, run them one at a time and change visualize tree accordingly.'''
 
-    # t,p=r.make_Lifetime_Tree()
-    # t,p=r.random_spanning()
-    t,p=r.dijkstra()
+    # t,p,final_edges=r.make_Lifetime_Tree(self.round_number) #CHANGE HERE
+    t,p,final_edges=r.random_spanning() #CHANGE HERE
+    # t,p,final_edges=r.dijkstra() #CHANGE HERE
+
+    #to make JSON file
+    data = defaultdict(list)
+    nodes = []
+    isSink = False
+    fillStyle = "#22cccc"
+    strokeStyle = "#009999"
+    for node in self.my_nodes:
+      if(node.id == cf.SINK_ID):
+        isSink = True
+        fillStyle = "ff0000"
+        strokeStyle = "ff0000"
+      jsonNode = {
+        "id": node.id, 
+        "x": node.pos_x*5+10, 
+        "y": node.pos_y*5+10,
+        "radius": 10,
+        "isSink": isSink,
+        "fillStyle": fillStyle,
+        "strokeStyle": strokeStyle 
+      }
+      isSink = False
+      fillStyle = "#22cccc"
+      strokeStyle = "#009999"
+      nodes.append(jsonNode)
+    data['nodes'] = nodes
+    data['edges'] = final_edges
+
+    self.createFile('r',data) #CHANGE HERE
 
     if p == 0:
       self.end = 1
@@ -59,7 +88,8 @@ class Network():
     '''change the below function according to which Tree function is being run, for maximum lifetime, make last parameter 'm'. 
         for random spanning make last parameter 'r' and for dikistra make last parameter 'd'. 
     '''
-    visualize_Tree(t,self.round_number,p,sink,'d')
+
+    visualize_Tree(t,self.round_number,p,sink,'r') #CHANGE HERE
     for i in range(25):
       r.start_convergecast()
       alive_nodes = self.get_alive_nodes()
@@ -70,7 +100,7 @@ class Network():
       # print(self.get_energy_consumed_by_network())
       # print(self.energy_before)
       print(r.number_of_descendents())
-
+    print(Jain_fairness(self))
     r.sleep()
     yield self.env.timeout(2)
     print("----------------------------------------------------------------------------------------------------------------------------")
@@ -97,14 +127,14 @@ class Network():
  
     self.my_nodes = []
     i=0
-    self.my_nodes.append(Node(i,None,True,0,0))
     for x in range(5):
       for y in range(4):
-          if(i == 0):
+          px = x*10
+          py = y*10
+          if(i == cf.SINK_ID):
+            self.my_nodes.append(Node(i,None,True,px,py))
             i+=1
             continue
-          px = x*10
-          py = y*10 
           self.my_nodes.append(Node(i,None,None,px,py))
           i+=1
     self.position={}
@@ -155,7 +185,39 @@ class Network():
     self.energy_before = energy_in_each_node
     return energy_consumed_each_node
 
-      
+  #create file for each round
+  def createFile(self,type,data):
+    #delete pre existing files
+    if(type == 'm' and self.round_number == 1):
+        files = glob.glob('Simulator/JSON/Lifetime_Tree/*')
+        for f in files:
+            os.remove(f)
+    elif(type == 'r' and self.round_number == 1):
+        files = glob.glob('Simulator/JSON/Random_Tree/*')
+        for f in files:
+            os.remove(f)
+    elif(type == 'd' and self.round_number == 1):
+        files = glob.glob('Simulator/JSON/Dijikstra_Tree/*')
+        for f in files:
+            os.remove(f)
+
+    #creation of file 
+    if(type == 'm'):
+      filepath = os.path.join('Simulator/JSON/Lifetime_Tree/', 'tree%d.json'%self.round_number)
+      f = open(filepath, "w")
+      with open('Simulator/JSON/Lifetime_Tree/tree%d.json'%self.round_number, 'w') as outfile:
+        json.dump(data, outfile)
+    elif(type == 'r'):
+      filepath = os.path.join('Simulator/JSON/Random_Tree/', 'tree%d.json'%self.round_number)
+      f = open(filepath, "w")
+      with open('Simulator/JSON/Random_Tree/tree%d.json'%self.round_number, 'w') as outfile:
+        json.dump(data, outfile)
+    elif(type == 'd'):
+      filepath = os.path.join('Simulator/JSON/Dijikstra_Tree/', 'tree%d.json'%self.round_number)
+      f = open(filepath, "w")
+      with open('Simulator/JSON/Dijikstra_Tree/tree%d.json'%self.round_number, 'w') as outfile:
+        json.dump(data, outfile)
+  
   #edges between nodes
   def communication_link(self):
     my_edges = []

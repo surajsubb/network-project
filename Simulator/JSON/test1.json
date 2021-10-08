@@ -1,0 +1,80 @@
+{
+    "nodes": [
+        {
+            "id": 0,
+            "x": 10,
+            "y": 20,
+            "radius": 10,
+            "isSink": true,
+            "fillStyle": "#ff0000",
+            "strokeStyle": "#ff0000"
+        },
+        {
+            "id": 1,
+            "x": 100,
+            "y": 20,
+            "radius": 10,
+            "isSink": false,
+            "fillStyle": "#22cccc",
+            "strokeStyle": "#009999"
+        },
+        {
+            "id": 2,
+            "x": 150,
+            "y": 20,
+            "radius": 10,
+            "isSink": false,
+            "fillStyle": "#22cccc",
+            "strokeStyle": "#009999"
+        },
+        {
+            "id": 3,
+            "x": 200,
+            "y": 20,
+            "radius": 10,
+            "isSink": false,
+            "fillStyle": "#22cccc",
+            "strokeStyle": "#009999"
+        },
+        {
+            "id": 4,
+            "x": 250,
+            "y": 20,
+            "radius": 10,
+            "isSink": false,
+            "fillStyle": "#22cccc",
+            "strokeStyle": "#009999"
+        },
+        {
+            "id": 5,
+            "x": 250,
+            "y": 250,
+            "radius": 10,
+            "isSink": false,
+            "fillStyle": "#22cccc",
+            "strokeStyle": "#009999"
+        }
+    ],
+    "edges" : [
+        {
+            "from": 1,
+            "to" : 0
+        },
+        {
+            "from": 2,
+            "to" : 1
+        },
+        {
+            "from": 3,
+            "to" : 2
+        },
+        {
+            "from": 4,
+            "to" : 3
+        },
+        {
+            "from": 5,
+            "to": 1
+        }
+    ]
+}

@@ -4,6 +4,8 @@ import networkx as nx
 import math
 import random
 import heapq
+import json
+import os
 
 
 '''
@@ -54,7 +56,10 @@ class Routing:
     def show_network(self):
         print(self.network)
 
-    def make_Lifetime_Tree(self):
+    def obj_dict(obj):
+        return obj.__dict__
+
+    def make_Lifetime_Tree(self, round_number):
         Tree=nx.DiGraph()
         sink=self.network.get_sink()
         # print(sink)
@@ -127,26 +132,32 @@ class Routing:
                     
         self.tree_nodes=[]
         ST.sort(key=func,reverse=True)
-        print(ST)
-        for edge in result:
-            print(edge[0].id,edge[1].id)
+        # print(ST)
+        # for edge in result:
+            # print(edge[0].id,edge[1].id)
         for node in ST:
             #Tree.add_node(node[0])
             self.tree_nodes.append(node)
         Tree.add_edges_from(result)
+        final_edges = []
+        for res in result:
+            edge = {"from" : res[0].id, "to" : res[1].id}
+            final_edges.append(edge)
         ##Tree.nodes[sink.id]['color']="Red"
-        for node in self.tree_nodes:
+        # for node in self.tree_nodes:
             #print(node)
-            print(node[0].id,node[0].payload)
+            # print(node[0].id,node[0].payload)
         
         pos = {}
         for node in Tree.nodes():
-            print(node)
+            # print(node)
             pos[node]=(node.pos_x,node.pos_y)
-            print(pos[node])
-        return Tree,pos
+            # print(pos[node])
+
+        return Tree,pos,final_edges
     
     
+
     def time_synchronize(self):
         sink=self.network.get_sink()
         i = 0
@@ -184,6 +195,7 @@ class Routing:
             i+=1
             nodes[0].reactivate()
     
+    #move descendents to network_mynodes and sink should not be included
     def number_of_descendents(self):
         i = 0
         total_desc = 0
@@ -262,12 +274,17 @@ class Routing:
         for node in self.tree_nodes:
             print(node[0].id,node[0].payload)
 
+        final_edges = []
+        for res in result:
+            edge = {"from" : res[0].id, "to" : res[1].id}
+            final_edges.append(edge)
+
         pos = {}
         for node in Tree.nodes():
             print(node)
             pos[node]=(node.pos_x,node.pos_y)
             print(pos[node])
-        return Tree,pos
+        return Tree,pos,final_edges
 
     
     def dijkstra(self):
@@ -313,12 +330,15 @@ class Routing:
                     #v_id.hop=u_id.hop+1
                     
         self.tree_nodes=[]
+        final_edges=[]
         #print("hie")
         #print(result)
         for node in nodes:
             if node.parent is None:
                 continue
             Tree.add_edge(node,node.parent)
+            edge = {"from" : node.id, "to" : node.parent.id}
+            final_edges.append(edge)
             node.hop=node.parent.hop+1
             update_payload(node.parent)
         for node in nodes:
@@ -341,7 +361,7 @@ class Routing:
             pos[node]=(node.pos_x,node.pos_y)
             print(pos[node])
 
-        return Tree,pos
+        return Tree,pos,final_edges
         
                    
 
