@@ -1,7 +1,7 @@
 import numpy as np 
 import config
 from utils import *
-
+import json
 class Node(object):
     def __init__(self,id,parent=None,sink=None,pos_x=None,pos_y=None):
         self.id=id
@@ -54,7 +54,8 @@ class Node(object):
         print("Network Failure Battery Depleted %d"%self.id)
         self.battery_depletion()
     
-    
+    def toJSON(self):
+        return json.dumps(self, default=lambda obj: obj.__dict__)
 
     @property
     def nexthop(self):

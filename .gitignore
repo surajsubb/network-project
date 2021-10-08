@@ -1,3 +1,6 @@
 maximum_plots/
 random_plots/
 dijikstra_plots/
+Simulator/JSON/Lifetime_Tree/
+Simulator/JSON/Dijikstra_Tree/
+Simulator/JSON/Random_Tree/
