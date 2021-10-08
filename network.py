@@ -104,9 +104,12 @@ class Network():
             i+=1
             continue
           px = x*10
-          py = y*10
+          py = y*10 
           self.my_nodes.append(Node(i,None,None,px,py))
           i+=1
+    self.position={}
+    for node in self.my_nodes:
+      position[node]=(node.px,node.py)
   
   #getting the sink node
   def get_sink(self):

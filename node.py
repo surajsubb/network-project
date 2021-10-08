@@ -1,6 +1,6 @@
 import numpy as np 
 import config
-from utils import *
+#from utils import *
 
 class Node(object):
     def __init__(self,id,parent=None,sink=None,pos_x=None,pos_y=None):
