@@ -7,6 +7,7 @@ from rout import Routing
 import matplotlib.pyplot as plt
 import json
 from collections import defaultdict
+import os
 
 #function to get number of decendants list of self.payload in node
 
@@ -20,6 +21,12 @@ class Network():
     self.makeGraph()
     self.initial_energy_in_network()
     self.action = self.env.process(self.Simulate())
+    self.Jain=[]
+    self.energy_left=[]
+    self.average_desc=[]
+    self.average_energy=[]
+    self.total_energy_cons=[]
+    self.lifetime=[]
     # self.Simulate()
 
 
@@ -79,7 +86,8 @@ class Network():
     data['edges'] = final_edges
 
     self.createFile('r',data) #CHANGE HERE
-
+    self.initial_energy_in_network()
+    self.energy_left.append(self.total_energy_before)
     if p == 0:
       self.end = 1
       return
@@ -95,12 +103,20 @@ class Network():
       alive_nodes = self.get_alive_nodes()
       if(len(alive_nodes) < cf.NB_NODES):
         self.end = 1
+        self.lifetime=[self.round_number,cf.NB_NODES]
+        with open("Lifetime/"str(mode)+".txt","a") as f:
+          f.write(self.lifetime)
         break
       # print(self.get_energy_network())
       # print(self.get_energy_consumed_by_network())
       # print(self.energy_before)
-      print(r.number_of_descendents())
+      #print(r.number_of_descendents())
     print(Jain_fairness(self))
+    self.Jain.append(Jain_fairness(self))
+    _,avg=r.number_of_descendents()
+    self.average_desc.append(avg)
+    self.total_energy_cons.append(self.get_energy_consumed_by_network())
+    self.average_energy.append(self.get_energy_consumed_by_network()/cf.NB_NODES)
     r.sleep()
     yield self.env.timeout(2)
     print("----------------------------------------------------------------------------------------------------------------------------")
@@ -434,6 +450,24 @@ class Network():
     # ])
 
     return my_edges
+
+  
+  def finish(self,filepath):
+
+    files=['./Jain/','./Battery_left/','./Total_energy_consumed/','./Average_energy_consumed/','./Average_descendants/']
+    for file in files:
+      if not os.path.exists(file):
+        os.mkdir(file)
+    value=self.round_number
+    Y=np.linspace(start=0,top=value,num=value)
+    to_store=[self.Jain,self.energy_left,self.total_energy_cons,self.average_energy,self.average_desc]
+    Mat=np.zeros(shape=(value,2))
+    i=0
+    for val in to_store:
+      Mat[:][0]=self.Jain
+      Mat[:][1]=Y
+      np.save(os.path.join(files[i],filepath,".npy"),Mat)
+      i+=1
 
 #env = simpy.Environment() 
 def main():

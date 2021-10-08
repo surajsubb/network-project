@@ -208,7 +208,8 @@ class Routing:
             desc_per_node.append(nodes[0].payload)
             total_desc+=nodes[0].payload
         print("average descendents is %d" % (total_desc/config.NB_NODES))
-        return desc_per_node
+        avg=total_desc/config.NB_NODES
+        return desc_per_node,avg
 
             
 
@@ -362,23 +363,3 @@ class Routing:
             print(pos[node])
 
         return Tree,pos,final_edges
-        
-                   
-
-        
-            
-        
-
-            
-        
-
-
-
-
-
-
-
-
-        
-        
-

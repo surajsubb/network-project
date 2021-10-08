@@ -100,6 +100,15 @@ def generate_graph(nodes,position):
     edges=[edge for edge in graph.edges()]
     return graph,edges
 
+def save_file(value_X,value_Y,file_path):
+    Mat=np.zeros(shape=(len(value_X),2))
+    for i in range(len(value_X)):
+        Mat[i][0]=value_X[i]
+        Mat[i][1]=value_Y[i]
+    np.save(file_path,Mat)
+
+
+
 
 def test():
     my_nodes = []
