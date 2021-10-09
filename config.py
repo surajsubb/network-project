@@ -4,9 +4,9 @@ AREA_WIDTH=100
 AREA_HEIGHT=100
 
 
-INITIAL_BATTERY=10
+INITIAL_BATTERY=100
 
-sense_energy=3.2e-9
+sense_energy=3.2e-5
 
 MSG_LENGTH=8
 l=8
@@ -31,9 +31,9 @@ TIME_SYN=3
 SINK_ID = 0
 ## Network configurations:
 # number of nodes
-NB_NODES = 20
+NB_NODES = 60
 # node sensor range
-COVERAGE_RADIUS = 15 # meters 
+COVERAGE_RADIUS = 30 # meters 
 # node transmission range
 TX_RANGE = 30 # meters
 # base station position
@@ -48,7 +48,7 @@ E_DA = 5e-5 # Joules
 E_MP = 0.0013e-12 # Joules
 # energy dissipated at the power amplifier (supposing a line-of-sight
 # free-space channel (/bin/m^2)
-E_FS = 10e-12 # Joules
+E_FS = 10e-9 # Joules
 THRESHOLD_DIST = math.sqrt(E_FS/E_MP)
 
 RESULT='./result/'

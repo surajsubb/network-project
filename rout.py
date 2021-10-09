@@ -28,6 +28,7 @@ def update_payload(node):
 def calculate_score(node1,node2,weight):
     if node1.visited:
         u=node1.battery/(node1.hop*config.C_avg*math.ceil((node1.payload+2)*config.l/config.beta)+(node1.payload+1)*config.E_ELEC+node1.energy)
+        #print(weight,node2.energy,node1.hop)
         v=node2.battery/weight+node2.energy+node1.hop*config.C_avg    
     else:
         u=node2.battery/(node2.hop*config.C_avg*math.ceil((node2.payload+2)*config.l/config.beta)+(node2.payload+1)*config.E_ELEC+node2.energy)
@@ -38,6 +39,21 @@ def calculate_score(node1,node2,weight):
 
 def func(l):
         return l[-1]
+
+
+
+def mindist(dist,inc,G):
+    min = 100000000000
+ 
+        # Search not nearest vertex not in the
+        # shortest path tree
+    for u in G.nodes():
+        print(len(dist),u.id)
+        if dist[u.id] < min and inc[u.id] == False:
+            min = dist[u.id]
+            min_index = u
+    print("min",min_index.id)
+    return min_index
 
 class Routing:
 
@@ -67,9 +83,7 @@ class Routing:
         if len(nodes) < config.NB_NODES:
             print("node dead cannot continue")
             return Tree,0
-        #print(nodes)
         edges=self.network.communication_link()
-        #print("Edges",edges)
         ST=[]
         VT=[]
         result=[]
@@ -93,26 +107,17 @@ class Routing:
                     mapping[i]=-1
                 else:
                     mapping[i]=calculate_score(e[0],e[1],e[-1]['weight'])
-                #print(i)
+
                 i+=1
-            
-            #for key in mapping:
-            #    print(key,VT[key][0].id,VT[key][1].id,mapping[key])
             temp = max(mapping.values())
-            #print(temp)
             res=None
-            
-            #print(mapping.keys())
             for key in mapping.keys():
                 if mapping[key]==temp:
-                    #print(key,len(VT))
                     print(mapping[key],VT[key][0].id,VT[key][1].id)
                     res=VT[key]
                     break
-            #print(res[0].id,res[1].id,)
             if res[0].visited:
                 res[0],res[1]=res[1],res[0]
-            #print(res)
             result.append(res)
             res[0].visited=1
             res[1].visited=1
@@ -132,9 +137,6 @@ class Routing:
                     
         self.tree_nodes=[]
         ST.sort(key=func,reverse=True)
-        # print(ST)
-        # for edge in result:
-            # print(edge[0].id,edge[1].id)
         for node in ST:
             #Tree.add_node(node[0])
             self.tree_nodes.append(node)
@@ -143,16 +145,9 @@ class Routing:
         for res in result:
             edge = {"from" : res[0].id, "to" : res[1].id}
             final_edges.append(edge)
-        ##Tree.nodes[sink.id]['color']="Red"
-        # for node in self.tree_nodes:
-            #print(node)
-            # print(node[0].id,node[0].payload)
-        
         pos = {}
         for node in Tree.nodes():
-            # print(node)
             pos[node]=(node.pos_x,node.pos_y)
-            # print(pos[node])
 
         return Tree,pos,final_edges
     
@@ -201,15 +196,17 @@ class Routing:
         total_desc = 0
         avg_desc = 0
         desc_per_node = []
+        X=[]
         for nodes in self.tree_nodes:
             if i == len(self.tree_nodes)-1:
                 break
             i+=1
+            X.append(nodes[0].id)
             desc_per_node.append(nodes[0].payload)
             total_desc+=nodes[0].payload
         print("average descendents is %d" % (total_desc/config.NB_NODES))
         avg=total_desc/config.NB_NODES
-        return desc_per_node,avg
+        return desc_per_node,avg,X
 
             
 
@@ -260,11 +257,7 @@ class Routing:
                     VT.append(edge)
                     Inc.append((edge[0].id,edge[1].id))
             
-        #return ST
         self.tree_nodes=[]
-        #print("hie")
-        #print(result)
-        #print(ST)
         ST.sort(key=func,reverse=True)
         print(ST)
         for edge in result:
@@ -291,7 +284,6 @@ class Routing:
     def dijkstra(self):
         Tree=nx.DiGraph()
         sink=self.network.get_sink()
-        # print(sink)
         nodes=self.network.get_alive_nodes()
         if len(nodes) < config.NB_NODES:
             print("node dead cannot continue")
@@ -301,39 +293,27 @@ class Routing:
         G=nx.Graph()
         G.add_edges_from(edges)
         print(G)
-        no_nodes=len(nodes)
+        no_nodes=len(G.nodes())
         dist=[1000000 for i in range(no_nodes)]
         dist[sink.id]=0
         print(G.adj[sink])
-        for v in G.adj[sink]:
-            print(v,G.adj[sink][v])
-        PQ = []
-        heapq.heappush(PQ, [dist[sink.id], sink])
+        inc=[False]*no_nodes
         result=[]
         ST=[]
         ST.append((sink,sink.id,sink.hop))
-        while PQ:
-            u = heapq.heappop(PQ)  # u is a tuple [u_dist, u_id]
-            u_dist = u[0]
-            u_id = u[1]
-            #if u_id == target:
-            #    break
+        for count in range(no_nodes):
+            u_id=mindist(dist,inc,G)
+            inc[u_id.id]=True
             for v in G.adj[u_id]:
-               v_id = v
-               w_uv = G.adj[u_id][v]['weight']
-               if dist[u_id.id] +  w_uv < dist[v_id.id]:
-                    dist[v_id.id] = dist[u_id.id] + w_uv
-                    heapq.heappush(PQ, [dist[v_id.id], v_id])
-                    #pred[v_id] = u_id
-                    #result.append([v_id,u_id,{'weight':w_uv}])
-                    v_id.parent=u_id
-                    #update_payload(u_id)
-                    #v_id.hop=u_id.hop+1
+                if inc[v.id]==False: 
+                    v_id = v
+                    w_uv = G.adj[u_id][v]['weight']
+                    if dist[u_id.id] +  w_uv < dist[v_id.id]:
+                         dist[v_id.id] = dist[u_id.id] + w_uv
+                         v_id.parent=u_id
                     
         self.tree_nodes=[]
         final_edges=[]
-        #print("hie")
-        #print(result)
         for node in nodes:
             if node.parent is None:
                 continue
@@ -346,16 +326,9 @@ class Routing:
             if node.parent is None:
                 continue
             ST.append((node,node.id,node.hop))
-        #print(ST)
         ST.sort(key=func,reverse=True)
-        #print(ST)
-        #for edge in result:
-            #print(edge[0].id,edge[1].id)
         for node in ST:
             self.tree_nodes.append(node)
-        #Tree.add_edges_from(result)
-        #for node in self.tree_nodes:
-        #    print(node[0].id,node[0].payload)
         pos={}
         for node in Tree.nodes():
             print(node)
@@ -363,3 +336,7 @@ class Routing:
             print(pos[node])
 
         return Tree,pos,final_edges
+
+
+
+
