@@ -20,7 +20,7 @@ class Network():
     self.is_any_dead=0
     self.round_number = 0
     self.file=File
-    print(self.file)
+    #print(self.file)
     self.my_nodes=[]
     self.makeGraph()
     self.initial_energy_in_network()
@@ -93,7 +93,7 @@ class Network():
     data['nodes'] = nodes
     data['edges'] = final_edges
 
-    #self.createFile(self.mode,data) #CHANGE HERE
+    self.createFile(self.mode,data) #CHANGE HERE
     self.initial_energy_in_network()
     self.energy_left.append(self.total_energy_before)
     if p == 0:
@@ -106,7 +106,7 @@ class Network():
     '''
 
     visualize_Tree(t,self.round_number,p,sink,self.mode) #CHANGE HERE
-    for i in range(25):
+    for i in range(cf.MAX_TX_PER_ROUND):
       r.start_convergecast()
       alive_nodes = self.get_alive_nodes()
       if(len(alive_nodes) < cf.NB_NODES):
@@ -161,7 +161,7 @@ class Network():
     for node in self.my_nodes:
       self.position[node]=(node.pos_x,node.pos_y)
     sink=self.get_sink()
-    visualize_graph(G,0,self.position,sink)
+    visualize_graph(self.my_nodes,self.my_edges1,0,self.position,sink)
 
   
   #getting the sink node
@@ -215,38 +215,38 @@ class Network():
     return energy_consumed_each_node
 
   #create file for each round
-  #def createFile(self,type,data):
-  #  #delete pre existing files
-  #  if(type == 'm' and self.round_number == 1):
-  #      files = glob.glob('Simulator/JSON/Lifetime_Tree/*')
-  #      for f in files:
-  #        os.remove(f)
-  #  elif(type == 'r' and self.round_number == 1):
-  #      files = glob.glob('Simulator/JSON/Random_Tree/*')
-  #      for f in files:my_edges = []
-  #        os.remove(f)
-  #  elif(type == 'd' and self.round_number == 1):
-  #      files = glob.glob('Simulator/JSON/Dijikstra_Tree/*')
-  #      for f in files:
-  #        os.remove(f)
-#
-  #  #creation of file 
-  #  if(type == 'm'):
-  #    filepath = os.path.join('Simulator/JSON/Lifetime_Tree/', 'tree%d.json'%self.round_number)
-  #    f = open(filepath, "w")
-  #    with open('Simulator/JSON/Lifetime_Tree/tree%d.json'%self.round_number, 'w') as outfile:
-  #      json.dump(data, outfile)
-  #  elif(type == 'r'):
-  #    filepath = os.path.join('Simulator/JSON/Random_Tree/', 'tree%d.json'%self.round_number)
-  #    f = open(filepath, "w")
-  #    with open('Simulator/JSON/Random_Tree/tree%d.json'%self.round_number, 'w') as outfile:
-  #      json.dump(data, outfile)
-  #  elif(type == 'd'):
-  #    filepath = os.path.join('Simulator/JSON/Dijikstra_Tree/', 'tree%d.json'%self.round_number)
-  #    f = open(filepath, "w")
-  #    with open('Simulator/JSON/Dijikstra_Tree/tree%d.json'%self.round_number, 'w') as outfile:
-  #      json.dump(data, outfile)
-  #
+  def createFile(self,type,data):
+   #delete pre existing files
+   if(type == 'm' and self.round_number == 1):
+       files = glob.glob('Simulator/JSON/Lifetime_Tree/*')
+       for f in files:
+         os.remove(f)
+   elif(type == 'r' and self.round_number == 1):
+       files = glob.glob('Simulator/JSON/Random_Tree/*')
+       for f in files:
+         os.remove(f)
+   elif(type == 'd' and self.round_number == 1):
+       files = glob.glob('Simulator/JSON/Dijikstra_Tree/*')
+       for f in files:
+         os.remove(f)
+
+   #creation of file 
+   if(type == 'm'):
+     filepath = os.path.join('Simulator/JSON/Lifetime_Tree/', 'tree%d.json'%self.round_number)
+     f = open(filepath, "w")
+     with open('Simulator/JSON/Lifetime_Tree/tree%d.json'%self.round_number, 'w') as outfile:
+       json.dump(data, outfile)
+   elif(type == 'r'):
+     filepath = os.path.join('Simulator/JSON/Random_Tree/', 'tree%d.json'%self.round_number)
+     f = open(filepath, "w")
+     with open('Simulator/JSON/Random_Tree/tree%d.json'%self.round_number, 'w') as outfile:
+       json.dump(data, outfile)
+   elif(type == 'd'):
+     filepath = os.path.join('Simulator/JSON/Dijikstra_Tree/', 'tree%d.json'%self.round_number)
+     f = open(filepath, "w")
+     with open('Simulator/JSON/Dijikstra_Tree/tree%d.json'%self.round_number, 'w') as outfile:
+       json.dump(data, outfile)
+  
   #edges between nodes
   def communication_link(self):
     if self.my_edges1 is not None:
@@ -433,7 +433,7 @@ class Network():
       for j in range(value):
         Mat[j][0]=val[j]
         Mat[j][1]=Y[j]
-      print(Mat)
+      #print(Mat)
       np.save(os.path.join(files[i],filepath+".npy"),Mat)
       i+=1
 
@@ -441,7 +441,7 @@ class Network():
 
 
 def lifetime():
-  paths=glob.glob("*.pkl")
+  paths=["Graph_20.pkl","Graph_40.pkl","Graph_60.pkl","Graph_80.pkl","Graph_100.pkl"]
   Djikstra=[]
   Maximum=[]
   Nodes=[]
@@ -454,8 +454,10 @@ def lifetime():
   node["Graph_100.pkl"]=100
   for path in paths:
     number=node[path]
+    Nodes.append(number)
     cf.NB_NODES=number
     env = simpy.Environment() 
+
     my_network = Network(env,"m",path)
     env.run()
     Maximum.append(my_network.round_number)
@@ -474,35 +476,34 @@ def lifetime():
   plt.ylabel("Number of Rounds")
   plt.title("Lifetime")
   plt.legend(legends)
-  plt.show()
   plt.savefig("lifetime.png")
-
-    
-
-
+  plt.show()
 
 
 def main():
-  # env=None
-  #env = simpy.Environment() 
-  #my_network = Network(env,"m","Graph_60.pkl")
-  #env.run()
-  #my_network.finish("lifetime")
-  #env = simpy.Environment() 
-  #my_network = Network(env,"d","Graph_60.pkl")
-  #env.run()
-  #my_network.finish("djikstra")
-  #env = simpy.Environment() 
-  #my_network = Network(env,"r","Graph_60.pkl")
-  #env.run()
-  #my_network.finish("random")
-  #
-  #result=Result(my_network,None)
-  #result.plot_fairness('./Jain/')
-  #result.plot_average_descendants('./Average_descendants/')
-  #result.plot_energy_remaining('./Battery_left/')
-  #result.plot_energy_consumed("./Total_energy_consumed")
-  lifetime()
+  env=None
+
+  env = simpy.Environment() 
+  my_network = Network(env,"m","Graph_80.pkl")
+  env.run()
+  my_network.finish("lifetime")
+
+  env = simpy.Environment() 
+  my_network = Network(env,"d","Graph_80.pkl")
+  env.run()
+  my_network.finish("djikstra")
+
+  env = simpy.Environment() 
+  my_network = Network(env,"r","Graph_80.pkl")
+  env.run()
+  my_network.finish("random")
+  
+  result=Result(my_network,None)
+  result.plot_fairness('./Jain/')
+  result.plot_average_descendants('./Average_descendants/')
+  result.plot_energy_remaining('./Battery_left/')
+  result.plot_energy_consumed("./Total_energy_consumed")
+  # lifetime()
 
 
 main()

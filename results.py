@@ -28,7 +28,7 @@ class Result:
         if(type == 'r' and round_number == 1):
             files = glob.glob('./random_plots_desc/*')
             for f in files:
-                os.remove(f)
+                os .remove(f)
         elif(type == 'd' and round_number == 1):
             files = glob.glob('./dijikstra_plots_desc/*')
             for f in files:
@@ -77,6 +77,7 @@ class Result:
         plt.ylabel("Average Payload")
         plt.yticks(np.arange(0,11,1))
         plt.title("Average payload per node in each round ")
+        plt.savefig("Average_payload.jpg")
         plt.show()
 
     def plot_fairness(self,Filepath):
@@ -97,6 +98,7 @@ class Result:
         plt.ylabel("Jain's Fairness")
         #plt.yticks(np.linspace(start=min(Y),stop=max(Y),num=50))
         #plt.xticks(np.linspace(start=1,end=0.3,num=50))
+        plt.savefig("jain's Fairness.jpg")
         plt.show()
 
     def plot_lifetime(self,filepath):
@@ -131,8 +133,8 @@ class Result:
         plt.legend(legends)
         plt.xlabel("Rounds")
         plt.ylabel("Total Energy ")
-        
         plt.title("Total Energy consumed in each round ")
+        plt.savefig("totalenergy.jpg")
         plt.show()
         
     
@@ -154,6 +156,7 @@ class Result:
         plt.legend(legends)
         plt.xlabel("Rounds")
         plt.ylabel("Energy Left")
+        plt.savefig("Energy_left.jpg")
         plt.show()
 
     

@@ -58,16 +58,24 @@ def visualize_Tree(tree, round_number,pos,sink,type):
     nx.draw_networkx_edges(tree,pos=pos)
     #plt.show()
     if(type == 'r'):
+        if not os.path.exists("random_plots/"):
+            os.mkdir("random_plots/")
         plt.savefig("random_plots/plot%d.png" % round_number)
     elif(type == 'd'):
+        if not os.path.exists("dijikstra_plots/"):
+            os.mkdir("dijikstra_plots/")
         plt.savefig("dijikstra_plots/plot%d.png" % round_number)
     else:
+        if not os.path.exists("maximum_plots/"):
+            os.mkdir("maximum_plots/")
         plt.savefig("maximum_plots/plot%d.png" % round_number)
     plt.close()
 
-def visualize_graph(tree, round_number,pos,sink):
+def visualize_graph(nodes,edges, round_number,pos,sink):
     node_list=[]
     labeldict={}
+    tree=nx.Graph()
+    tree.add_edges_from(edges)
     for node in tree.nodes():
         if node is sink:
             labeldict[node]="S"

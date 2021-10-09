@@ -15,7 +15,7 @@ beta=8
 MAX_ROUNDS = 15000
 # number of transmissions of sensed information to cluster heads or to
 # base station (per round)
-MAX_TX_PER_ROUND = 1
+MAX_TX_PER_ROUND = 25
 
 NOTIFY_POSITION = 0
 
@@ -25,13 +25,13 @@ WAKE_UP=5
 
 C_avg=(10.0 + 15.0 + 20.0)/3.0
 
-TIME_SYN=3
+#TIME_SYN=3
 
 #Sink node id
 SINK_ID = 0
 ## Network configurations:
 # number of nodes
-NB_NODES = 60
+NB_NODES = 80
 # node sensor range
 COVERAGE_RADIUS = 30 # meters 
 # node transmission range

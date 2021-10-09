@@ -4,3 +4,12 @@ dijikstra_plots/
 Simulator/JSON/Lifetime_Tree/
 Simulator/JSON/Dijikstra_Tree/
 Simulator/JSON/Random_Tree/
+maximum_plots_desc/
+random_plots_desc/
+dijikstra_plots_desc/
+network-project-Grid/
+Average_descendants/
+Average_energy_consumed/
+Battery_left/
+Jain/
+Total_energy_consumed/

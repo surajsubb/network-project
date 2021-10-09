@@ -48,11 +48,11 @@ def mindist(dist,inc,G):
         # Search not nearest vertex not in the
         # shortest path tree
     for u in G.nodes():
-        print(len(dist),u.id)
+        #print(len(dist),u.id)
         if dist[u.id] < min and inc[u.id] == False:
             min = dist[u.id]
             min_index = u
-    print("min",min_index.id)
+    #print("min",min_index.id)
     return min_index
 
 class Routing:
@@ -82,7 +82,7 @@ class Routing:
         nodes=self.network.get_alive_nodes()
         if len(nodes) < config.NB_NODES:
             print("node dead cannot continue")
-            return Tree,0
+            return Tree,0,[]
         edges=self.network.communication_link()
         ST=[]
         VT=[]
@@ -113,7 +113,7 @@ class Routing:
             res=None
             for key in mapping.keys():
                 if mapping[key]==temp:
-                    print(mapping[key],VT[key][0].id,VT[key][1].id)
+                    #print(mapping[key],VT[key][0].id,VT[key][1].id)
                     res=VT[key]
                     break
             if res[0].visited:
@@ -217,7 +217,7 @@ class Routing:
         nodes=self.network.get_alive_nodes()
         if len(nodes) < config.NB_NODES:
             print("node dead cannot continue")
-            return Tree,0
+            return Tree,0,[]
         #print(nodes)
         edges=self.network.communication_link()
         ST=[]
@@ -235,7 +235,7 @@ class Routing:
 
         while not self.network.all_visited_nodes():
             random_no=random.randint(0,len(VT)-1)
-            print(random_no,len(VT))
+            #print(random_no,len(VT))
             res=VT[random_no]
             if res[0].visited and res[1].visited:
                 continue
@@ -259,14 +259,14 @@ class Routing:
             
         self.tree_nodes=[]
         ST.sort(key=func,reverse=True)
-        print(ST)
-        for edge in result:
-            print(edge[0].id,edge[1].id)
+        #print(ST)
+        #for edge in result:
+            #print(edge[0].id,edge[1].id)
         for node in ST:
             self.tree_nodes.append(node)
         Tree.add_edges_from(result)
-        for node in self.tree_nodes:
-            print(node[0].id,node[0].payload)
+        #for node in self.tree_nodes:
+            #print(node[0].id,node[0].payload)
 
         final_edges = []
         for res in result:
@@ -275,9 +275,9 @@ class Routing:
 
         pos = {}
         for node in Tree.nodes():
-            print(node)
+            #print(node)
             pos[node]=(node.pos_x,node.pos_y)
-            print(pos[node])
+            #print(pos[node])
         return Tree,pos,final_edges
 
     
@@ -290,13 +290,15 @@ class Routing:
             return Tree,0
         #print(nodes)
         edges=self.network.communication_link()
+        for edge in edges:
+            edge[-1]['weight']=20*((1/edge[0].battery)+(1/edge[1].battery))
         G=nx.Graph()
         G.add_edges_from(edges)
         print(G)
         no_nodes=len(G.nodes())
         dist=[1000000 for i in range(no_nodes)]
         dist[sink.id]=0
-        print(G.adj[sink])
+        #print(G.adj[sink])
         inc=[False]*no_nodes
         result=[]
         ST=[]
@@ -331,9 +333,9 @@ class Routing:
             self.tree_nodes.append(node)
         pos={}
         for node in Tree.nodes():
-            print(node)
+            #print(node)
             pos[node]=(node.pos_x,node.pos_y)
-            print(pos[node])
+            #print(pos[node])
 
         return Tree,pos,final_edges
 
